@@ -1,0 +1,92 @@
+SQL> show pdbs;
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 XEPDB1                         READ WRITE NO
+SQL> select con_id, tablespace_name, file_name
+  2  from cdb_data_files
+  3  where con_id = 3;
+
+    CON_ID TABLESPACE_NAME
+---------- ------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+         3 UNDOTBS1
+C:\APP\USER\PRODUCT\21C\ORADATA\XE\XEPDB1\UNDOTBS01.DBF
+
+         3 SYSAUX
+C:\APP\USER\PRODUCT\21C\ORADATA\XE\XEPDB1\SYSAUX01.DBF
+
+         3 SYSTEM
+C:\APP\USER\PRODUCT\21C\ORADATA\XE\XEPDB1\SYSTEM01.DBF
+
+
+    CON_ID TABLESPACE_NAME
+---------- ------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+         3 USERS
+C:\APP\USER\PRODUCT\21C\ORADATA\XE\XEPDB1\USERS01.DBF
+
+
+SQL> CREATE PLUGGABLE DATABASE plsql_class2024db admin user is_plsqlauca identified by 123
+  2  FILE_NAME_CONVERT = ('C:\app\user\product\21c\oradata\XE\pdbseed\','C:\app\user\product\21c\oradata\XE\ plsql_class2024db');
+
+Pluggable database created.
+
+SQL> CREATE PLUGGABLE DATABASE plsql_class2024db admin user is_to_delete identified by 123
+  2  FILE_NAME_CONVERT = ('C:\app\user\product\21c\oradata\XE\pdbseed\','C:\app\user\product\21c\oradata\XE\ is_to_delete');
+CREATE PLUGGABLE DATABASE plsql_class2024db admin user is_to_delete identified by 123
+*
+ERROR at line 1:
+ORA-65012: Pluggable database PLSQL_CLASS2024DB already exists.
+
+
+SQL> CREATE PLUGGABLE DATABASE is_to_delete admin user is_plsqlauca identified by 123
+  2  FILE_NAME_CONVERT = ('C:\app\user\product\21c\oradata\XE\pdbseed\','C:\app\user\product\21c\oradata\XE\ is_to_delete');
+
+Pluggable database created.
+
+SQL> alter pluggable database is_to_delete open;
+
+Pluggable database altered.
+
+SQL> show pdbs;
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 XEPDB1                         READ WRITE NO
+         4 PLSQL_CLASS2024DB              MOUNTED
+         5 IS_TO_DELETE                   READ WRITE NO
+SQL> DROP PLUGGABLE DATABASE is_to_delete INCLUDING DATAFILES;
+DROP PLUGGABLE DATABASE is_to_delete INCLUDING DATAFILES
+*
+ERROR at line 1:
+ORA-65025: Pluggable database IS_TO_DELETE is not closed on all instances.
+
+
+SQL> ALTER PLUGGABLE DATABASE is_to_delete CLOSE IMMEDIATE ;
+
+Pluggable database altered.
+
+SQL> DROP PLUGGABLE DATABASE is_to_delete INCLUDE DATAFILES;
+DROP PLUGGABLE DATABASE is_to_delete INCLUDE DATAFILES
+                                     *
+ERROR at line 1:
+ORA-00933: SQL command not properly ended
+
+
+SQL> DROP PLUGGABLE DATABASE is_to_delete INCLUDING DATAFILES;
+
+Pluggable database dropped.
+
+SQL> show pdbs;
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 XEPDB1                         READ WRITE NO
+         4 PLSQL_CLASS2024DB              MOUNTED
+SQL>
